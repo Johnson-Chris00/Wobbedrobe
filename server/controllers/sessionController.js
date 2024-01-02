@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Session = require('../models/sessionModel');
+const mongoose = require('mongoose');
+const Session = require('../models/sessionModel');
 
 const sessionController = {};
 

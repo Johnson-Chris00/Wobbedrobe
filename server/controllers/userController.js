@@ -1,7 +1,5 @@
 const db = require('../models/db.js');
 const bcrypt = require('bcrypt');
-const express = require('express'); // // put this in server to be able to use in all server files
-const session = require('express-session'); // put this in server to be able to use in all server files
 
 // userController would be called from server once it receives a post request then session middleware would be called to set a new session
 
