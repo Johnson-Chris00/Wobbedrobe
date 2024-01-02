@@ -9,10 +9,12 @@ import photo1 from '../../images/mukukoh-landingpage.jpg';
 import photo2 from '../../images/thom-landingpage.jpg';
 import photo3 from '../../images/serafima-landingpage.jpg'
 
+
 export default function LandingPage() {
   const user = useSelector((state) => state.status.user);
   const page = useSelector((state) => state.status.page);
   const dispatch = useDispatch();
+
 
     return (
       <div className="landingpage">
@@ -25,7 +27,7 @@ export default function LandingPage() {
           <img src={ photo3 } className="photo3" alt="Wobbedrobe Photo" />
         </div>
         <div className="landingpage-signin">
-            <button onClick={() => dispatch(goToPage('LOGIN'))}>Sign In</button>
+            <button onClick={()=>dispatch(goToPage('LOGIN'))}>Sign In</button>
         </div>
       </div>
   );

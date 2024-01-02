@@ -7,6 +7,9 @@ import {
   requestUserLogin,
   requestUserSignup,
 } from '../../utils/fetchRequests/user';
+import useSound from 'use-sound'
+import Fetch from '../../images/Fetch.mp3'
+
 
 // Page 2 & 3
 export default function LogInSignUpBox() {
@@ -17,6 +20,9 @@ export default function LogInSignUpBox() {
   const [isSignUp, setIsSignUp] = useState(false);
   // const [formState, setFormState] = useState(isSignUp);
   const [showSignUp, setShowSignUp] = useState(null);
+  const [play] = useSound(Fetch, {volume: 0.3})
+
+
 
   console.log(defaultUsers);
   console.log('login');
@@ -24,6 +30,7 @@ export default function LogInSignUpBox() {
   const handleSubmit = async (e) => {
     // this will be async
     e.preventDefault();
+    play()
     const username = e.target.username.value;
     const password = e.target.password.value;
     if (!isSignUp) {

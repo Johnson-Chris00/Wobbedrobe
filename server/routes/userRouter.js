@@ -1,6 +1,7 @@
 const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
 const router = express.Router();
-
 const userController = require('../controllers/userController.js');
 const cookieController = require('../controllers/cookieController.js');
 const sessionController = require('../controllers/sessionController.js');
@@ -10,8 +11,10 @@ const ootdController = require('../controllers/ootdController.js');
 router.post(
   '/login',
   userController.verifyUser,
-  // cookieController.setSSIDCookie,
+  cookieController.setCookie,
+  cookieController.setSSIDCookie,
   // sessionController.isLoggedIn,
+  // sessionController.startSession,
   wobbedrobeController.getTopsForUser,
   wobbedrobeController.getBottomsForUser,
   wobbedrobeController.getOverallsForUser,
@@ -37,10 +40,13 @@ router.post(
 router.post(
   '/signup',
   userController.createUser,
+  // sessionController.startSession,
+  // cookieController.setSSIDCookie,
   // cookieController.setSSIDCookie,
   // sessionController.startSession,
   (req, res) => {
     console.log('POST /user/signup route hit');
+    console.log(process.env.PG_URI);
     const { user_id, username } = res.locals.userData;
     res.status(200).json({
       user_id,
@@ -89,5 +95,22 @@ router.get(
     });
   }
 );
+
+// Unknown route handler
+router.use('*', (req, res) => {
+  res.status(404).send('Not Found');
+});
+
+// Global error handler
+router.use((err, req, res, next) => {
+  const defaultErr = {
+    log: 'Express error handler caught unknown middleware error',
+    status: 500,
+    message: { err: 'An error occurred' },
+  };
+  const errorObj = Object.assign({}, defaultErr, err);
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
+});
 
 module.exports = router;

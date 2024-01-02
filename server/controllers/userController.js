@@ -17,7 +17,7 @@ userController.createUser = async (req, res, next) => {
 
     // insert the new user into the database and return user_id and username
     const queryText =
-      'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING user_id, username;';
+      'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING user_id, username';
     const queryParams = [username, hashedPassword];
     const { rows } = await db.query(queryText, queryParams);
     console.log('completed query in userController.createUser');
@@ -32,6 +32,10 @@ userController.createUser = async (req, res, next) => {
     // store username in res locals
     res.locals.userData = rows[0];
     res.locals.user = rows[0].username;
+
+    const newSession = new Session({ userId: req.session.userId });
+    await newSession.save();
+
     // go to next middleware which would be to create session with userId
     return next();
   } catch (err) {
@@ -52,21 +56,30 @@ userController.verifyUser = async (req, res, next) => {
     // query the database for a user
     const queryText =
       'SELECT user_id, username, password_hash FROM users WHERE username = $1';
+    // 'SELECT user_id, username, password_hash FROM users WHERE username = claire'
+    console.log('lookout!!: ', queryText);
     const queryParams = [username];
+    console.log('userController.verifyUser queryParams:', queryParams);
+
     const { rows } = await db.query(queryText, queryParams);
     console.log('completed query in userController.verifyUser');
 
+    // TODO fix error handling
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Username not found' });
     }
 
     const user = rows[0];
+    console.log('user!!', user);
     // compare the submitted password with the stored password hash
     const isMatch = await bcrypt.compare(password, user.password_hash);
-
+    console.log(isMatch);
     if (!isMatch) {
       return res.status(401).json({ error: 'Password is incorrect' });
     }
+
+    //storing isMatch
+    res.locals.isMatch = isMatch;
 
     // if password matches, establish a session
     // req.session.userId = user.user_id;
@@ -74,6 +87,7 @@ userController.verifyUser = async (req, res, next) => {
     // store username in res.locals to use on homepage
     res.locals.user = user.username;
     res.locals.userData = user;
+    // res.locals.userData.user_id
 
     // go to the next middleware which would be to establish a session
     return next();
